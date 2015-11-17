@@ -6,8 +6,7 @@
  *
  * Power saving and RFM12 code mostly stolen from emonTH
  */
- 
- 
+
 #define RF69_COMPAT 1                                                              // Set to 1 if using RFM69CW or 0 is using RFM12B
 #include <RFu_JeeLib.h>                                                            // https://github.com/flabbergast/RFu_jeelib.git
 
@@ -37,27 +36,8 @@ typedef struct {                                                      // RFM12B 
 } Payload;
 Payload packet;
 
-
 void setup() 
 {
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, HIGH);                       // Status LED on
-
-  rf12_initialize(nodeID, RF_freq, networkGroup);                       // Initialize RFM12B
-  rf12_sleep(RF12_SLEEP);
-  
-  Serial.begin(9600);
-  
-  Serial.println("--------------------");
-  Serial.println("DC VOLTMETER");
-  Serial.print("Maximum Voltage: ");
-  Serial.print((int)(vPow / (r2 / (r1 + r2))));
-  Serial.println("V");
-  Serial.println("+-------+-------+-------+--------+---------+");
-  Serial.println("| Bat   | PV    | Vcc   | PV-Bat | Vcc-Bat |");
-  Serial.println("+-------+-------+-------+--------+---------+");
-  delay(100);
-  
   //################################################################################################################################
   // Power Save  - turn off what we don't need - http://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
   //################################################################################################################################
@@ -66,8 +46,27 @@ void setup()
   power_twi_disable();                    //Disable the Two Wire Interface module.
 //  power_timer0_disable();
   power_timer1_disable();
-  power_spi_disable();
 
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);                       // Status LED on
+
+  Serial.begin(9600);
+  
+  Serial.println("--------------------");
+  Serial.println("DC VOLTMETER");
+  Serial.print("Maximum Voltage: ");
+  Serial.print((int)(vPow / (r2 / (r1 + r2))));
+  Serial.println("V");
+
+  rf12_initialize(nodeID, RF_freq, networkGroup);                       // Initialize RFM12B
+  rf12_sleep(RF12_SLEEP);
+  power_spi_disable();
+  
+  Serial.println("+-------+-------+-------+--------+---------+");
+  Serial.println("| Bat   | PV    | Vcc   | PV-Bat | Vcc-Bat |");
+  Serial.println("+-------+-------+-------+--------+---------+");
+  delay(100);
+  
   digitalWrite(LED, LOW);
 }
  
@@ -107,7 +106,7 @@ void loop()
   rf12_sleep(RF12_SLEEP);
   power_spi_disable();  
   
-  digitalWrite(LED,LOW);  
+  digitalWrite(LED, LOW);  
 
   dodelay(10000);
 }
